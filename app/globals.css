@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-jakarta);
+  --color-surface: #fdf8ff;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  min-height: 100dvh;
+  color: #1e293b;
+  font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  background: #fdf8ff;
+}
