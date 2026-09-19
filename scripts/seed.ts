@@ -7,18 +7,27 @@
  * fall back to `scripts/questions.example.ts` otherwise. The local file is
  * gitignored so a real answer key is never committed.
  */
+import { existsSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
 import { createClient } from "@supabase/supabase-js";
 
 import type { SeedQuestion } from "./question-type";
+import { QUESTIONS as exampleQuestions } from "./questions.example";
+
+const scriptsDir = path.dirname(fileURLToPath(import.meta.url));
 
 async function loadQuestions(): Promise<{ questions: SeedQuestion[]; source: string }> {
-  try {
-    const local = await import("./questions.local");
+  const localPath = path.join(scriptsDir, "questions.local.ts");
+  if (existsSync(localPath)) {
+    const local = (await import(pathToFileURL(localPath).href)) as {
+      QUESTIONS: SeedQuestion[];
+    };
     return { questions: local.QUESTIONS, source: "scripts/questions.local.ts" };
-  } catch {
-    const example = await import("./questions.example");
-    return { questions: example.QUESTIONS, source: "scripts/questions.example.ts" };
   }
+
+  return { questions: exampleQuestions, source: "scripts/questions.example.ts" };
 }
 
 async function main() {
